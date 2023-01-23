@@ -3,8 +3,8 @@ package com.example.animaciones
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
+import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,18 +34,17 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 @Preview
 fun Login() {
     Screen {
         var user by remember { mutableStateOf("") }
         var pass by remember { mutableStateOf("") }
-        var validationMessage by remember { mutableStateOf("") }
+        var count by remember { mutableStateOf(0) }
         var passVisible by remember { mutableStateOf(false) }
 
         val loginEnabled = user.isNotEmpty() && pass.isNotEmpty()
-        val isError = validationMessage.isNotEmpty()
-        val login = { validationMessage = validateLogin(user, pass) }
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -54,7 +53,6 @@ fun Login() {
             TextField(
                 value = user,
                 onValueChange = { user = it },
-                isError = isError,
                 label = { Text(text = "User") },
                 placeholder = { Text(text = "Debe ser email") },
                 singleLine = true,
@@ -66,13 +64,11 @@ fun Login() {
             TextField(
                 value = pass,
                 onValueChange = { pass = it },
-                isError = isError,
                 label = { Text(text = "Pass") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password
                 ),
-                keyboardActions = KeyboardActions { login() },
                 visualTransformation = if (passVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     IconToggleButton(
@@ -92,12 +88,18 @@ fun Login() {
                     }
                 }
             )
-            AnimatedVisibility(visible = validationMessage.isNotEmpty()) {
-                Text(text = validationMessage, color = MaterialTheme.colors.error)
+            AnimatedContent(
+                targetState = count,
+                transitionSpec = {
+                    (slideIntoContainer(AnimatedContentScope.SlideDirection.Up) + fadeIn() with
+                            slideOutOfContainer(AnimatedContentScope.SlideDirection.Up) + fadeOut())
+                }
+            ) {
+                Text(text = "Num of clicks: $it")
             }
             AnimatedVisibility(visible = loginEnabled) {
                 Button(
-                    onClick = login,
+                    onClick = { count++ },
                 ) {
                     Text(text = "LOGIN")
                 }

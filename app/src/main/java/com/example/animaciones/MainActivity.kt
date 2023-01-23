@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.*
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.animateDp
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -23,6 +25,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.animaciones.ui.theme.AnimacionesTheme
+import kotlin.math.min
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,17 +45,12 @@ fun Login() {
         var pass by remember { mutableStateOf("") }
         var count by remember { mutableStateOf(0) }
         var passVisible by remember { mutableStateOf(false) }
-        val infiniteTransition = rememberInfiniteTransition()
-        val bgColor by infiniteTransition.animateColor(
-            initialValue = Color.White,
-            targetValue = Color.LightGray,
-            animationSpec = infiniteRepeatable(
-                animation = keyframes {
-                    durationMillis = 500
-                },
-                repeatMode = RepeatMode.Reverse
-            )
-        )
+
+        val transition = updateTransition(targetState = count, label = "updateTransition")
+        val borderDP by transition.animateDp(label = "transitionDP") { it.dp }
+        val bgColor by transition.animateColor(label = "transitionColor") {
+            Color.Gray.copy(alpha = min(1f, it / 10f))
+        }
         val loginEnabled = user.isNotEmpty() && pass.isNotEmpty()
         Box(
             contentAlignment = Alignment.Center
@@ -63,6 +61,7 @@ fun Login() {
                 modifier = Modifier
                     .wrapContentSize()
                     .background(bgColor)
+                    .border(borderDP, Color.Gray)
                     .padding(16.dp)
             ) {
                 TextField(

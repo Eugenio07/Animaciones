@@ -3,19 +3,18 @@ package com.example.animaciones
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.Icons.Default
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
-
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -85,14 +84,15 @@ fun Login() {
                     }
                 }
             )
-            if (validationMessage.isNotEmpty()) {
+            AnimatedVisibility(visible = validationMessage.isNotEmpty()) {
                 Text(text = validationMessage, color = MaterialTheme.colors.error)
             }
-            Button(
-                onClick = login,
-                enabled = loginEnabled
-            ) {
-                Text(text = "LOGIN")
+            AnimatedVisibility(visible = loginEnabled) {
+                Button(
+                    onClick = login,
+                ) {
+                    Text(text = "LOGIN")
+                }
             }
         }
     }
@@ -101,7 +101,7 @@ fun Login() {
 fun validateLogin(user: String, pass: String): String = when {
     !user.contains('@') -> "Usuario no valido"
     pass.length < 5 -> "Contraseña debe tener al menos 5 caracteres"
-    else -> "Success"
+    else -> ""
 }
 
 

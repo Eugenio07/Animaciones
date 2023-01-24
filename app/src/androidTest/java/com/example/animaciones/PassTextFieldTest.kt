@@ -1,5 +1,8 @@
 package com.example.animaciones
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.material.Button
+import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,11 +24,24 @@ class PassTextFieldTest {
     @Before
     fun setUp() {
         composeTestRule.setContent {
-            var state by remember { mutableStateOf("") }
-            PassTextField(value = state, onValueChange = { state = it })
+            Login()
         }
     }
 
+    @Test
+    fun onlyUserFilledWontShowLoginButton(): Unit = with(composeTestRule) {
+        onNodeWithText("User").performTextInput("user")
+
+        onNodeWithText("LOGIN").assertDoesNotExist()
+    }
+
+    @Test
+    fun userAndPassFilledShowsLoginButton(): Unit = with(composeTestRule) {
+        onNodeWithText("User").performTextInput("user")
+        onNodeWithText("Pass").performTextInput("pass")
+
+        onNodeWithText("LOGIN").assertExists()
+    }
     @Test
     fun revealIconShowsPassword(): Unit = with(composeTestRule) {
 

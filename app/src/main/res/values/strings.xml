@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Animaciones</string>
+    <string name="app_name" translatable="false">Animaciones</string>
+    <string name="reveal_password" translatable="false">Reveal Password</string>
+    <string name="hide_password" translatable="false">Hide Password</string>
 </resources>
